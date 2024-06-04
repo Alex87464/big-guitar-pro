@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import PlayerNav from './components/PlayerNav';
 import { AlphaTabApi, Settings } from '@coderline/alphatab';
-import clsx from 'clsx';
 
 function App() {
   const elementRef = useRef<HTMLDivElement>(null);
@@ -10,7 +9,9 @@ function App() {
   useEffect(() => {
     const alphaTabApi = new AlphaTabApi(elementRef.current!, {
       core: {
-        file: 'https://www.alphatab.net/files/canon.gp',
+        // file: 'https://www.alphatab.net/files/canon.gp', // This file is loaded from the internet
+        // file: '/gp-songs/caprice24.gp',  // This is the file that will be loaded from the public folder
+        file: '/gp-songs/Exercise.gp5',
         fontDirectory: '/font/',
       },
       player: {
@@ -31,11 +32,8 @@ function App() {
 
   return (
     <div className='min-h-screen'>
-      <div className='h-32'>
-        <div className='w-full' ref={elementRef}>
-          <div className={clsx('at-cursor-beat', 'bg-blue-500 w-[3px]')}></div>
-        </div>
-      </div>
+      <div className='w-full' ref={elementRef} />
+
       <PlayerNav api={api} />
     </div>
   );
