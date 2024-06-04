@@ -11,12 +11,14 @@ import {
   SkipForward,
   TimerOff,
   TimerReset,
+  Volume1,
   Volume2,
   VolumeX,
 } from 'lucide-react';
 import { useState } from 'react';
 import { AlphaTabApi } from '@coderline/alphatab';
 import { Toggle } from './ui/toggle';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface PlayerNavProps {
   api: AlphaTabApi | undefined;
@@ -51,7 +53,7 @@ export default function PlayerNav({ api }: PlayerNavProps) {
 
   const handleCountIn = () => {
     setIsCountDownEnabled((prevCountDown) => !prevCountDown);
-    api!.countInVolume = isCountDownEnabled ? 1 : 0;
+    api!.countInVolume = isCountDownEnabled ? 0.5 : 0.0;
   };
 
   const onTempoChange = (value: number) => {
@@ -78,20 +80,29 @@ export default function PlayerNav({ api }: PlayerNavProps) {
           <Button size='icon' variant='ghost'>
             <SkipForward className='w-6 h-6' />
           </Button>
-          <Button size='icon' variant='ghost' onClick={handleRepeat}>
-            {isRepeat ? (
-              <Repeat1 className='w-6 h-6' />
-            ) : (
-              <Repeat className='w-6 h-6' />
-            )}
-          </Button>
-          <Button size='icon' variant='ghost' onClick={handleToggleMute}>
-            {isMuted ? (
-              <VolumeX className='w-6 h-6' />
-            ) : (
-              <Volume2 className='w-6 h-6' />
-            )}
-          </Button>
+          <Toggle onPressedChange={handleRepeat}>
+            {isMuted ? <Repeat1 /> : <Repeat />}
+          </Toggle>
+
+          <Popover>
+            <PopoverTrigger>
+              <Volume1 />
+            </PopoverTrigger>
+            <PopoverContent className='w-40'>
+              <Slider
+                defaultValue={[isMuted ? 0 : 1]}
+                onValueChange={(value) => {
+                  setIsMuted(value[0] === 0);
+                  api!.masterVolume = value[0];
+                }}
+                min={0}
+                max={1}
+                step={0.01}
+                className='w-full'
+              />
+            </PopoverContent>
+          </Popover>
+
           <Button
             size='lg'
             variant='ghost'
@@ -105,19 +116,22 @@ export default function PlayerNav({ api }: PlayerNavProps) {
             )}
             <Label className='text-sm text-muted-foreground'>Metronome</Label>
           </Button>
-          <Button size='icon' variant='ghost' onClick={handleCountIn}>
+          {/* <Button size='icon' variant='ghost' onClick={handleCountIn}>
             {isCountDownEnabled ? (
               <TimerOff className='w-6 h-6' />
             ) : (
               <TimerReset className='w-6 h-6' />
             )}
-          </Button>
+          </Button> */}
+          <Toggle onPressedChange={handleCountIn}>
+            {isCountDownEnabled ? <TimerOff /> : <TimerReset />}
+          </Toggle>
           <Button
             variant='outline'
             className='text-black'
-            onClick={() => console.log(api?.playerState)}
+            onClick={() => console.log(api?.score?.tracks[0])}
           >
-            status
+            test
           </Button>
         </div>
         <div className='flex space-x-2'>
