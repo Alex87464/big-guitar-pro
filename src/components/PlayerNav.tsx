@@ -13,12 +13,23 @@ import {
   Volume2,
   VolumeX,
 } from 'lucide-react';
+import { useState } from 'react';
 
-export default function PlayerNav() {
-  const isPlaying = false;
+interface PlayerNavProps {
+  playPause: () => void;
+}
+
+export default function PlayerNav({ playPause }: PlayerNavProps) {
+  // const isPlaying = false;
+  const [isPlaying, setIsPlaying] = useState(false);
   const isMuted = true;
   const isRepeat = false;
   const isCountDown = false;
+
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+    playPause();
+  };
 
   return (
     <div className='flex items-center justify-between bg-gray-900 text-white px-4 py-3 rounded-lg'>
@@ -27,11 +38,11 @@ export default function PlayerNav() {
           <SkipBack className='w-6 h-6' />
         </Button>
         {isPlaying ? (
-          <Button size='icon' variant='ghost'>
+          <Button size='icon' variant='ghost' onClick={handlePlayPause}>
             <Pause className='w-6 h-6' />
           </Button>
         ) : (
-          <Button size='icon' variant='ghost'>
+          <Button size='icon' variant='ghost' onClick={handlePlayPause}>
             <Play className='w-6 h-6' />
           </Button>
         )}
