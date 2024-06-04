@@ -33,7 +33,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div className='min-h-screen'>
       <div className='h-32'>
         <div className='w-full' ref={elementRef}></div>
       </div>
