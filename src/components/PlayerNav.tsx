@@ -36,6 +36,11 @@ export default function PlayerNav({ api }: PlayerNavProps) {
     api!.masterVolume = isMuted ? 1 : 0;
   };
 
+  const handleRepeat = () => {
+    setIsRepeat((prevRepeat) => !prevRepeat);
+    api!.isLooping = !isRepeat;
+  };
+
   return (
     <div className='fixed bottom-0 z-10 w-full flex justify-center'>
       <div className='flex items-center justify-between bg-gray-900 text-white px-4 py-3 rounded-lg'>
@@ -53,7 +58,7 @@ export default function PlayerNav({ api }: PlayerNavProps) {
           <Button size='icon' variant='ghost'>
             <SkipForward className='w-6 h-6' />
           </Button>
-          <Button size='icon' variant='ghost'>
+          <Button size='icon' variant='ghost' onClick={handleRepeat}>
             {isRepeat ? (
               <Repeat1 className='w-6 h-6' />
             ) : (
