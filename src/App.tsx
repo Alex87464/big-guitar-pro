@@ -1,30 +1,44 @@
-import { useState } from 'react';
-import { Label } from './components/ui/label';
-import { Button } from './components/ui/button';
+import { useEffect, useRef, useState } from 'react';
 import PlayerNav from './components/PlayerNav';
+import { AlphaTabApi, Settings } from '@coderline/alphatab';
 
 function App() {
-  const [count, setCount] = useState(0);
+  const elementRef = useRef<HTMLDivElement>(null);
+  const [api, setApi] = useState<AlphaTabApi>();
 
-  const onIncrement = () => setCount(count + 1);
-  const onDecrement = () => setCount(count - 1);
-  const onReset = () => setCount(0);
+  useEffect(() => {
+    const api = new AlphaTabApi(elementRef.current!, {
+      core: {
+        file: 'https://www.alphatab.net/files/canon.gp',
+        fontDirectory: '/font/',
+      },
+      player: {
+        enablePlayer: true,
+        enableCursor: true,
+        enableUserInteraction: true,
+        soundFont: '/soundfont/sonivox.sf2',
+      },
+    } as Settings);
+
+    setApi(api);
+
+    return () => {
+      console.log('destroy', elementRef, api);
+      api.destroy();
+    };
+  }, []);
+
+  function playPause() {
+    api?.playPause();
+  }
 
   return (
-    <div className='h-screen flex flex-col items-center justify-center'>
-      <Label>Counter example</Label>
-
-      <div className='flex flex-col items-center pt-5 gap-3'>
-        <div className='flex items-center gap-3'>
-          <Button onClick={onIncrement}>+1</Button>
-          <Label>{count}</Label>
-          <Button onClick={onDecrement}>-1</Button>
-        </div>
-        <Button variant='outline' onClick={onReset}>
-          Reset
-        </Button>
+    <div>
+      <div className='h-32'>
+        <div className='w-full' ref={elementRef}></div>
       </div>
-      <PlayerNav />
+
+      <PlayerNav playPause={playPause} />
     </div>
   );
 }
