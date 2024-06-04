@@ -14,72 +14,61 @@ import {
   VolumeX,
 } from 'lucide-react';
 import { useState } from 'react';
+import { AlphaTabApi } from '@coderline/alphatab';
 
 interface PlayerNavProps {
-  playPause: () => void;
+  api: AlphaTabApi | undefined;
 }
 
-export default function PlayerNav({ playPause }: PlayerNavProps) {
-  // const isPlaying = false;
+export default function PlayerNav({ api }: PlayerNavProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const isMuted = true;
-  const isRepeat = false;
-  const isCountDown = false;
+  const [isMuted, setIsMuted] = useState(false);
+  const [isRepeat, setIsRepeat] = useState(false);
+  const [isCountDown, setIsCountDown] = useState(false);
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
-    playPause();
+    api?.playPause();
   };
 
   return (
     <div className='fixed bottom-0 z-10 w-full flex justify-center'>
-      <div className='flex items-center justify-between bg-gray-900 text-white px-4 py-3 rounded-lg '>
+      <div className='flex items-center justify-between bg-gray-900 text-white px-4 py-3 rounded-lg'>
         <div className='flex items-center space-x-4 pr-3'>
           <Button size='icon' variant='ghost'>
             <SkipBack className='w-6 h-6' />
           </Button>
-          {isPlaying ? (
-            <Button size='icon' variant='ghost' onClick={handlePlayPause}>
+          <Button size='icon' variant='ghost' onClick={handlePlayPause}>
+            {isPlaying ? (
               <Pause className='w-6 h-6' />
-            </Button>
-          ) : (
-            <Button size='icon' variant='ghost' onClick={handlePlayPause}>
+            ) : (
               <Play className='w-6 h-6' />
-            </Button>
-          )}
+            )}
+          </Button>
           <Button size='icon' variant='ghost'>
             <SkipForward className='w-6 h-6' />
           </Button>
-
-          {isRepeat ? (
-            <Button size='icon' variant='ghost'>
+          <Button size='icon' variant='ghost'>
+            {isRepeat ? (
               <Repeat1 className='w-6 h-6' />
-            </Button>
-          ) : (
-            <Button size='icon' variant='ghost'>
+            ) : (
               <Repeat className='w-6 h-6' />
-            </Button>
-          )}
-
-          {isMuted ? (
-            <Button size='icon' variant='ghost'>
+            )}
+          </Button>
+          <Button size='icon' variant='ghost'>
+            {isMuted ? (
               <VolumeX className='w-6 h-6' />
-            </Button>
-          ) : (
-            <Button size='icon' variant='ghost'>
+            ) : (
               <Volume2 className='w-6 h-6' />
-            </Button>
-          )}
-
-          {isCountDown ? (
-            <Button size='icon' variant='ghost'>
+            )}
+          </Button>
+          <Button size='icon' variant='ghost'>
+            {isCountDown ? (
               <Timer className='w-6 h-6' />
-            </Button>
-          ) : (
-            <Button size='icon' variant='ghost'>
+            ) : (
               <TimerOff className='w-6 h-6' />
-            </Button>
-          )}
+            )}
+          </Button>
         </div>
         <div className='flex space-x-2'>
           <Slider
