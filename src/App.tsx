@@ -19,6 +19,7 @@ function App() {
         enableCursor: true,
         enableUserInteraction: true,
         soundFont: '/soundfont/sonivox.sf2',
+        scrollOffsetY: -20,
       },
     } as Settings);
     console.log(elementRef);
