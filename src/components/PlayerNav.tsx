@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from './ui/label';
 import {
-  Guitar,
   Headphones,
   PlayCircle,
   Repeat,
@@ -14,25 +13,25 @@ import {
   Volume1,
   VolumeX,
 } from 'lucide-react';
-import { GiDrumKit, GiGuitarBassHead, GiGuitarHead } from 'react-icons/gi';
+import { GiDrumKit, GiGuitarHead } from 'react-icons/gi';
 import { useEffect, useState } from 'react';
 import { AlphaTabApi } from '@coderline/alphatab';
 import { Toggle } from './ui/toggle';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
 import { Separator } from './ui/separator';
+import clsx from 'clsx';
 
 interface PlayerNavProps {
   api: AlphaTabApi | undefined;
 }
 export default function PlayerNav({ api }: PlayerNavProps) {
+  const tracks = api?.score?.tracks;
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [isMetronome, setIsMetronome] = useState(false);
   const [isCountDownEnabled, setIsCountDownEnabled] = useState(false);
   const [tempo, setTempo] = useState(100);
-  // TODO: Create a state to track actual track selected
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -58,21 +57,6 @@ export default function PlayerNav({ api }: PlayerNavProps) {
     setTempo(value);
     api!.playbackSpeed = value / 100;
   };
-
-  // With this useffect ill get all the tracks and the score
-  useEffect(() => {
-    const tracks = api?.score?.tracks;
-
-    if (tracks) {
-      console.log(tracks);
-    }
-
-    return () => {
-      if (tracks) {
-        console.log('cleaning up');
-      }
-    };
-  }, []);
 
   return (
     <div className='fixed bottom-0 z-10 w-full flex justify-center pb-3'>
@@ -132,24 +116,31 @@ export default function PlayerNav({ api }: PlayerNavProps) {
           <Button
             variant='outline'
             className='text-black'
-            onClick={() => console.log(api?.score?.tracks[0])}
+            onClick={() => console.log('Check actual track')}
           >
-            test
+            Check actual track
           </Button>
         </div>
-        <div className='flex space-x-2'>
-          <Slider
-            disabled={isPlaying}
-            defaultValue={[tempo]}
-            onValueChange={(value) => {
-              onTempoChange(value[0]);
-            }}
-            min={0}
-            max={200}
-            step={1}
-            className='w-32 [&>span:first-child]:h-1 [&>span:first-child]:bg-white/30 [&_[role=slider]]:bg-white [&_[role=slider]]:w-3 [&_[role=slider]]:h-3 [&_[role=slider]]:border-0 [&>span:first-child_span]:bg-white [&_[role=slider]:focus-visible]:ring-0 [&_[role=slider]:focus-visible]:ring-offset-0 [&_[role=slider]:focus-visible]:scale-105 [&_[role=slider]:focus-visible]:transition-transform'
-          />
 
+        <Slider
+          disabled={isPlaying}
+          defaultValue={[tempo]}
+          onValueChange={(value) => {
+            onTempoChange(value[0]);
+          }}
+          min={0}
+          max={200}
+          step={1}
+          className={clsx(
+            {
+              'cursor-not-allowed': isPlaying,
+              'cursor-pointer': !isPlaying,
+            },
+            'w-32 [&>span:first-child]:h-1 [&>span:first-child]:bg-white/30 [&_[role=slider]]:bg-white [&_[role=slider]]:w-3 [&_[role=slider]]:h-3 [&_[role=slider]]:border-0 [&>span:first-child_span]:bg-white [&_[role=slider]:focus-visible]:ring-0 [&_[role=slider]:focus-visible]:ring-offset-0 [&_[role=slider]:focus-visible]:scale-105 [&_[role=slider]:focus-visible]:transition-transform'
+          )}
+        />
+
+        <div className='flex mx-2 w-20'>
           <Label>{tempo} bpm</Label>
         </div>
         <div className='px-3'>
@@ -180,14 +171,20 @@ export default function PlayerNav({ api }: PlayerNavProps) {
                       {track.staves[0].stringTuning.name || 'Drums'}
                     </p>
                     <Separator orientation='vertical' className='h-7' />
-                    <ToggleGroup size='lg' type='multiple'>
-                      <ToggleGroupItem value='solo'>
-                        <Headphones />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value='mute'>
-                        <VolumeX />
-                      </ToggleGroupItem>
-                    </ToggleGroup>
+
+                    <Toggle
+                      onPressedChange={() =>
+                        api?.changeTrackMute(
+                          [api.score!.tracks[track.index]],
+                          !api.score!.tracks[track.index].playbackInfo.isMute
+                        )
+                      }
+                    >
+                      <Headphones />
+                    </Toggle>
+                    <Toggle value='mute'>
+                      <VolumeX />
+                    </Toggle>
                   </div>
                 ))}
               </div>
