@@ -2,8 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from './ui/label';
 import {
-  Pause,
-  Play,
+  Guitar,
+  Headphones,
   PlayCircle,
   Repeat,
   Repeat1,
@@ -12,13 +12,15 @@ import {
   TimerOff,
   TimerReset,
   Volume1,
-  Volume2,
   VolumeX,
 } from 'lucide-react';
-import { useState } from 'react';
+import { GiDrumKit, GiGuitarBassHead, GiGuitarHead } from 'react-icons/gi';
+import { useEffect, useState } from 'react';
 import { AlphaTabApi } from '@coderline/alphatab';
 import { Toggle } from './ui/toggle';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
+import { Separator } from './ui/separator';
 
 interface PlayerNavProps {
   api: AlphaTabApi | undefined;
@@ -30,15 +32,11 @@ export default function PlayerNav({ api }: PlayerNavProps) {
   const [isMetronome, setIsMetronome] = useState(false);
   const [isCountDownEnabled, setIsCountDownEnabled] = useState(false);
   const [tempo, setTempo] = useState(100);
+  // TODO: Create a state to track actual track selected
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
     api?.playPause();
-  };
-
-  const handleToggleMute = () => {
-    setIsMuted((prevMuted) => !prevMuted);
-    api!.masterVolume = isMuted ? 1 : 0;
   };
 
   const handleRepeat = () => {
@@ -61,19 +59,30 @@ export default function PlayerNav({ api }: PlayerNavProps) {
     api!.playbackSpeed = value / 100;
   };
 
+  // With this useffect ill get all the tracks and the score
+  useEffect(() => {
+    const tracks = api?.score?.tracks;
+
+    if (tracks) {
+      console.log(tracks);
+    }
+
+    return () => {
+      if (tracks) {
+        console.log('cleaning up');
+      }
+    };
+  }, []);
+
   return (
     <div className='fixed bottom-0 z-10 w-full flex justify-center pb-3'>
-      <div className='flex items-center justify-between bg-gray-900 text-white px-4 py-3 rounded-lg'>
+      <div className='flex items-center justify-between bg-slate-950 text-white px-4 py-3 rounded-lg'>
         <div className='flex items-center space-x-4 pr-3'>
           <Button size='icon' variant='ghost'>
             <SkipBack className='w-6 h-6' />
           </Button>
 
           <Toggle defaultPressed={isPlaying} onPressedChange={handlePlayPause}>
-            {
-              // This is the same as the previous button, but using the Toggle component
-              // Additionally, the Toggle component will automatically handle the state of the button
-            }
             <PlayCircle />
           </Toggle>
 
@@ -116,13 +125,7 @@ export default function PlayerNav({ api }: PlayerNavProps) {
             )}
             <Label className='text-sm text-muted-foreground'>Metronome</Label>
           </Button>
-          {/* <Button size='icon' variant='ghost' onClick={handleCountIn}>
-            {isCountDownEnabled ? (
-              <TimerOff className='w-6 h-6' />
-            ) : (
-              <TimerReset className='w-6 h-6' />
-            )}
-          </Button> */}
+
           <Toggle onPressedChange={handleCountIn}>
             {isCountDownEnabled ? <TimerOff /> : <TimerReset />}
           </Toggle>
@@ -148,6 +151,48 @@ export default function PlayerNav({ api }: PlayerNavProps) {
           />
 
           <Label>{tempo} bpm</Label>
+        </div>
+        <div className='px-3'>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant='default'>Instrumentos</Button>
+            </PopoverTrigger>
+            <PopoverContent className='w-fit' align='end'>
+              <div className='flex flex-col space-y-2'>
+                <h4 className='scroll-m-20 text-xl font-semibold tracking-tight border-b'>
+                  Instrumentos
+                </h4>
+                {api?.score?.tracks.map((track) => (
+                  <div
+                    key={track.index}
+                    onClick={() =>
+                      api.renderTracks([api.score!.tracks[track.index]])
+                    }
+                    className='flex gap-5 items-center justify-between border-muted p-2 rounded-lg hover:border-slate-800 border-[1px] cursor-pointer'
+                  >
+                    {track.staves[0].isPercussion ? (
+                      <GiDrumKit size={32} />
+                    ) : (
+                      <GiGuitarHead size={32} />
+                    )}
+                    <Label>{track.name}</Label>
+                    <p className='text-sm text-muted-foreground'>
+                      {track.staves[0].stringTuning.name || 'Drums'}
+                    </p>
+                    <Separator orientation='vertical' className='h-7' />
+                    <ToggleGroup size='lg' type='multiple'>
+                      <ToggleGroupItem value='solo'>
+                        <Headphones />
+                      </ToggleGroupItem>
+                      <ToggleGroupItem value='mute'>
+                        <VolumeX />
+                      </ToggleGroupItem>
+                    </ToggleGroup>
+                  </div>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>
