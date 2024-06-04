@@ -91,3 +91,14 @@
   @apply bg-blue-800 w-[3px] opacity-75;
 }
 
+.at-selection div {
+  @apply bg-purple-400 bg-opacity-20
+}
+
+.at-cursor-bar {
+  @apply bg-yellow-200 opacity-30;
+}
+
+.at-higlight * {
+  @apply fill-amber-400 stroke-amber-400
+}
