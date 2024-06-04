@@ -26,6 +26,7 @@ export default function PlayerNav({ api }: PlayerNavProps) {
   const [isRepeat, setIsRepeat] = useState(false);
   const [isMetronome, setIsMetronome] = useState(false);
   const [isCountDownEnabled, setIsCountDownEnabled] = useState(false);
+  const [tempo, setTempo] = useState(100);
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -51,6 +52,19 @@ export default function PlayerNav({ api }: PlayerNavProps) {
     setIsCountDownEnabled((prevCountDown) => !prevCountDown);
     api!.countInVolume = isCountDownEnabled ? 1 : 0;
   };
+
+  // const handleTempoChange = (value: number) => {
+  //   // setTempo(value[0]);
+  //   // Controls the current playback speed as percentual value. Normal speed is 1.0 (100%) and 0.5 would be 50%.
+  //   // The value by default is 0.5.
+  //   // To modify the speed of the playback, set this property to the desired value.
+  //   api!.playbackSpeed = value / 100;
+  // };
+  const onTempoChange = (value: number) => {
+    setTempo(value);
+    api!.playbackSpeed = value / 100;
+  };
+
   return (
     <div className='fixed bottom-0 z-10 w-full flex justify-center'>
       <div className='flex items-center justify-between bg-gray-900 text-white px-4 py-3 rounded-lg'>
@@ -82,12 +96,18 @@ export default function PlayerNav({ api }: PlayerNavProps) {
               <Volume2 className='w-6 h-6' />
             )}
           </Button>
-          <Button size='icon' variant='ghost' onClick={handleToggleMetronome}>
+          <Button
+            size='lg'
+            variant='ghost'
+            className='flex flex-col items-center'
+            onClick={handleToggleMetronome}
+          >
             {isMetronome ? (
               <MdiMetronome className='w-6 h-6' />
             ) : (
               <MdiMetronomeOff className='w-6 h-6' />
             )}
+            <Label className='text-sm text-muted-foreground'>Metronome</Label>
           </Button>
           <Button size='icon' variant='ghost' onClick={handleCountIn}>
             {isCountDownEnabled ? (
@@ -99,12 +119,18 @@ export default function PlayerNav({ api }: PlayerNavProps) {
         </div>
         <div className='flex space-x-2'>
           <Slider
-            defaultValue={[100]}
+            disabled={isPlaying}
+            defaultValue={[tempo]}
+            onValueChange={(value) => {
+              onTempoChange(value[0]);
+            }}
+            min={0}
             max={200}
-            step={10}
+            step={1}
             className='w-32 [&>span:first-child]:h-1 [&>span:first-child]:bg-white/30 [&_[role=slider]]:bg-white [&_[role=slider]]:w-3 [&_[role=slider]]:h-3 [&_[role=slider]]:border-0 [&>span:first-child_span]:bg-white [&_[role=slider]:focus-visible]:ring-0 [&_[role=slider]:focus-visible]:ring-offset-0 [&_[role=slider]:focus-visible]:scale-105 [&_[role=slider]:focus-visible]:transition-transform'
           />
-          <Label>1x</Label>
+
+          <Label>{tempo} bpm</Label>
         </div>
       </div>
     </div>
