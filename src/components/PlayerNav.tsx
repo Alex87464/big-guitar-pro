@@ -4,6 +4,7 @@ import { Label } from './ui/label';
 import {
   Pause,
   Play,
+  PlayCircle,
   Repeat,
   Repeat1,
   SkipBack,
@@ -15,11 +16,11 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { AlphaTabApi } from '@coderline/alphatab';
+import { Toggle } from './ui/toggle';
 
 interface PlayerNavProps {
   api: AlphaTabApi | undefined;
 }
-
 export default function PlayerNav({ api }: PlayerNavProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -53,32 +54,27 @@ export default function PlayerNav({ api }: PlayerNavProps) {
     api!.countInVolume = isCountDownEnabled ? 1 : 0;
   };
 
-  // const handleTempoChange = (value: number) => {
-  //   // setTempo(value[0]);
-  //   // Controls the current playback speed as percentual value. Normal speed is 1.0 (100%) and 0.5 would be 50%.
-  //   // The value by default is 0.5.
-  //   // To modify the speed of the playback, set this property to the desired value.
-  //   api!.playbackSpeed = value / 100;
-  // };
   const onTempoChange = (value: number) => {
     setTempo(value);
     api!.playbackSpeed = value / 100;
   };
 
   return (
-    <div className='fixed bottom-0 z-10 w-full flex justify-center'>
+    <div className='fixed bottom-0 z-10 w-full flex justify-center pb-3'>
       <div className='flex items-center justify-between bg-gray-900 text-white px-4 py-3 rounded-lg'>
         <div className='flex items-center space-x-4 pr-3'>
           <Button size='icon' variant='ghost'>
             <SkipBack className='w-6 h-6' />
           </Button>
-          <Button size='icon' variant='ghost' onClick={handlePlayPause}>
-            {isPlaying ? (
-              <Pause className='w-6 h-6' />
-            ) : (
-              <Play className='w-6 h-6' />
-            )}
-          </Button>
+
+          <Toggle defaultPressed={isPlaying} onPressedChange={handlePlayPause}>
+            {
+              // This is the same as the previous button, but using the Toggle component
+              // Additionally, the Toggle component will automatically handle the state of the button
+            }
+            <PlayCircle />
+          </Toggle>
+
           <Button size='icon' variant='ghost'>
             <SkipForward className='w-6 h-6' />
           </Button>
@@ -115,6 +111,13 @@ export default function PlayerNav({ api }: PlayerNavProps) {
             ) : (
               <TimerReset className='w-6 h-6' />
             )}
+          </Button>
+          <Button
+            variant='outline'
+            className='text-black'
+            onClick={() => console.log(api?.playerState)}
+          >
+            status
           </Button>
         </div>
         <div className='flex space-x-2'>
