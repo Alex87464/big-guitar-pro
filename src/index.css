@@ -74,3 +74,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* .at-wrap {
+  @apply w-full h-[80vh] m-auto border relative flex flex-col overflow-hidden;
+}
+
+.at-content {
+  @apply relative overflow-hidden flex-1;
+}
+
+.at-viewport {
+  @apply overflow-y-auto absolute top-0 left-0 right-0 bottom-0 pr-[20px];
+} */
+
+.at-cursor-beat {
+  @apply bg-blue-800 w-[3px] opacity-75;
+}
+
