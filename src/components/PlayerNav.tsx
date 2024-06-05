@@ -29,10 +29,13 @@ interface PlayerNavProps {
 export default function PlayerNav({ api }: PlayerNavProps) {
   const [tracks, setTracks] = useState([] as any[]);
 
+  const [masterVolume, setMasterVolume] = useState<any>(0);
+
   const [actualTrack, setActualTrack] = useState<any>(api?.tracks[0]); // Track the actual rendered track
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [actualTrackMuted, setActualTrackMuted] = useState(false);
+
   const [isRepeat, setIsRepeat] = useState(false);
   const [isMetronome, setIsMetronome] = useState(false);
   const [isCountDownEnabled, setIsCountDownEnabled] = useState(false);
@@ -64,6 +67,7 @@ export default function PlayerNav({ api }: PlayerNavProps) {
   useEffect(() => {
     setTracks(api?.score?.tracks || []);
     setActualTrack(api?.tracks[0]);
+    setMasterVolume(api?.masterVolume);
   }, [tracks]);
 
   return (
@@ -82,7 +86,7 @@ export default function PlayerNav({ api }: PlayerNavProps) {
             <SkipForward className='w-6 h-6' />
           </Button>
           <Toggle onPressedChange={handleRepeat}>
-            {isMuted ? <Repeat1 /> : <Repeat />}
+            {isRepeat ? <Repeat1 /> : <Repeat />}
           </Toggle>
 
           <Popover>
@@ -91,9 +95,9 @@ export default function PlayerNav({ api }: PlayerNavProps) {
             </PopoverTrigger>
             <PopoverContent className='w-40'>
               <Slider
-                defaultValue={[isMuted ? 0 : 1]}
+                defaultValue={[masterVolume]}
                 onValueChange={(value) => {
-                  setIsMuted(value[0] === 0);
+                  setMasterVolume(value[0]);
                   api!.masterVolume = value[0];
                 }}
                 min={0}
