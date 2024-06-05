@@ -11,7 +11,7 @@ function App() {
       core: {
         // file: 'https://www.alphatab.net/files/canon.gp', // This file is loaded from the internet
         // file: '/gp-songs/caprice24.gp',  // This is the file that will be loaded from the public folder
-        file: '/gp-songs/ViewToAFill.gp',
+        file: '/gp-songs/caprice24.gp',
         fontDirectory: '/font/',
       },
       player: {
