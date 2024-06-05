@@ -41,6 +41,7 @@ export default function PlayerNav({ api }: PlayerNavProps) {
   const [actualTrack, setActualTrack] = useState<any>(api?.tracks[0]); // Track the actual rendered track
 
   const [isPlaying, setIsPlaying] = useState(false);
+
   const [actualTrackMuted, setActualTrackMuted] = useState(false);
 
   const [isRepeat, setIsRepeat] = useState(false);
@@ -48,7 +49,9 @@ export default function PlayerNav({ api }: PlayerNavProps) {
   const [isMetronome, setIsMetronome] = useState(false);
   const [isCountDownEnabled, setIsCountDownEnabled] = useState(false);
 
-  const [tempo, setTempo] = useState(100);
+  const [tempo, setTempo] = useState<any>(100);
+  const [tempoMultiplier, setTempoMultiplier] = useState(1);
+
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
     api?.playPause();
@@ -69,14 +72,18 @@ export default function PlayerNav({ api }: PlayerNavProps) {
   };
 
   const onTempoChange = (value: number) => {
-    setTempo(value);
     api!.playbackSpeed = value / 100;
+    // I should use the api!.score!.tempo to get the original tempo
+    // then i have to set the new tempo multiplying the original tempo by the playbackSpeed
+    setTempo(Math.floor(api!.score!.tempo * api!.playbackSpeed));
+    setTempoMultiplier(api!.playbackSpeed);
   };
 
   useEffect(() => {
     setTracks(api?.score?.tracks || []);
     setActualTrack(api?.tracks[0]);
     setMasterVolume(api?.masterVolume);
+    setTempo(api?.score?.tempo);
   }, [tracks]);
 
   return (
@@ -231,6 +238,7 @@ export default function PlayerNav({ api }: PlayerNavProps) {
           disabled={isPlaying}
           defaultValue={[tempo]}
           onValueChange={(value) => {
+            console.log(value);
             onTempoChange(value[0]);
           }}
           min={0}
@@ -245,9 +253,11 @@ export default function PlayerNav({ api }: PlayerNavProps) {
           )}
         />
 
-        <div className='flex mx-2 w-20'>
+        <div className='flex items-center mx-2 w-20 gap-2'>
+          <Label>{tempoMultiplier}X</Label>
           <Label>{tempo} bpm</Label>
         </div>
+
         <div className='px-3'>
           <Popover>
             <PopoverTrigger asChild>
