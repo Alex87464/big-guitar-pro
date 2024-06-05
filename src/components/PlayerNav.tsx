@@ -253,9 +253,9 @@ export default function PlayerNav({ api }: PlayerNavProps) {
           )}
         />
 
-        <div className='flex items-center mx-2 w-20 gap-2'>
-          <Label>{tempoMultiplier}X</Label>
-          <Label>{tempo} bpm</Label>
+        <div className='flex items-center mx-2 w-20 gap-2 space-x-3'>
+          <Label>{tempoMultiplier}x</Label>
+          <Label className='text-muted-foreground'>{tempo} BPM</Label>
         </div>
 
         <div className='px-3'>
