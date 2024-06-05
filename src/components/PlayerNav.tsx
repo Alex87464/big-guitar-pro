@@ -15,6 +15,7 @@ import {
   Volume1,
   VolumeX,
 } from 'lucide-react';
+import { PiMetronome, PiMetronomeBold } from 'react-icons/pi';
 import { GiDrumKit, GiGuitarHead } from 'react-icons/gi';
 import { useEffect, useState } from 'react';
 import { AlphaTabApi } from '@coderline/alphatab';
@@ -22,6 +23,12 @@ import { Toggle } from './ui/toggle';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Separator } from './ui/separator';
 import clsx from 'clsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip';
 
 interface PlayerNavProps {
   api: AlphaTabApi | undefined;
@@ -37,8 +44,10 @@ export default function PlayerNav({ api }: PlayerNavProps) {
   const [actualTrackMuted, setActualTrackMuted] = useState(false);
 
   const [isRepeat, setIsRepeat] = useState(false);
+
   const [isMetronome, setIsMetronome] = useState(false);
   const [isCountDownEnabled, setIsCountDownEnabled] = useState(false);
+
   const [tempo, setTempo] = useState(100);
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -55,8 +64,8 @@ export default function PlayerNav({ api }: PlayerNavProps) {
   };
 
   const handleCountIn = () => {
-    setIsCountDownEnabled((prevCountDown) => !prevCountDown);
-    api!.countInVolume = isCountDownEnabled ? 0.5 : 0.0;
+    setIsCountDownEnabled(!isCountDownEnabled);
+    api!.countInVolume = !isCountDownEnabled ? 1 : 0;
   };
 
   const onTempoChange = (value: number) => {
@@ -108,23 +117,50 @@ export default function PlayerNav({ api }: PlayerNavProps) {
             </PopoverContent>
           </Popover>
 
-          <Button
-            size='lg'
-            variant='ghost'
-            className='flex flex-col items-center'
-            onClick={handleToggleMetronome}
-          >
-            {!isMetronome ? (
-              <MdiMetronomeOff className='w-6 h-6' />
-            ) : (
-              <MdiMetronome className='w-6 h-6' />
-            )}
-            <Label className='text-sm text-muted-foreground'>Metronome</Label>
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Toggle
+                    defaultPressed={isMetronome}
+                    onPressedChange={handleToggleMetronome}
+                    asChild
+                  >
+                    <Button
+                      size='icon'
+                      variant='ghost'
+                      className='flex flex-col items-center'
+                    >
+                      {!isMetronome ? (
+                        <PiMetronome size={24} />
+                      ) : (
+                        <PiMetronomeBold size={24} />
+                      )}
+                    </Button>
+                  </Toggle>
+                </div>
+              </TooltipTrigger>
 
-          <Toggle onPressedChange={handleCountIn}>
-            {isCountDownEnabled ? <TimerOff /> : <TimerReset />}
-          </Toggle>
+              <TooltipContent align='center'>
+                <Label>Metronome</Label>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Toggle onPressedChange={handleCountIn}>
+                  {!isCountDownEnabled ? <TimerOff /> : <TimerReset />}
+                </Toggle>
+              </TooltipTrigger>
+
+              <TooltipContent align='center'>
+                <Label>Count In</Label>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           <Button
             variant='outline'
             size='icon'
