@@ -50,8 +50,8 @@ export default function PlayerNav({ api }: PlayerNavProps) {
   };
 
   const handleToggleMetronome = () => {
-    setIsMetronome((prevMetronome) => !prevMetronome);
-    api!.metronomeVolume = isMetronome ? 1 : 0;
+    setIsMetronome(!isMetronome);
+    api!.metronomeVolume = !isMetronome ? 1 : 0;
   };
 
   const handleCountIn = () => {
@@ -114,10 +114,10 @@ export default function PlayerNav({ api }: PlayerNavProps) {
             className='flex flex-col items-center'
             onClick={handleToggleMetronome}
           >
-            {isMetronome ? (
-              <MdiMetronome className='w-6 h-6' />
-            ) : (
+            {!isMetronome ? (
               <MdiMetronomeOff className='w-6 h-6' />
+            ) : (
+              <MdiMetronome className='w-6 h-6' />
             )}
             <Label className='text-sm text-muted-foreground'>Metronome</Label>
           </Button>
