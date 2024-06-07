@@ -34,7 +34,7 @@ interface PlayerNavProps {
   api: AlphaTabApi | undefined;
 }
 export default function PlayerNav({ api }: PlayerNavProps) {
-  const [tracks, setTracks] = useState([] as any[]);
+  const [scoreTracks, setScoreTracks] = useState([] as any[]);
 
   const [masterVolume, setMasterVolume] = useState<any>(0);
 
@@ -71,6 +71,8 @@ export default function PlayerNav({ api }: PlayerNavProps) {
     api!.countInVolume = !isCountDownEnabled ? 1 : 0;
   };
 
+  const handleMute = () => {};
+
   const onTempoChange = (value: number) => {
     api!.playbackSpeed = value / 100;
     // I should use the api!.score!.tempo to get the original tempo
@@ -80,11 +82,11 @@ export default function PlayerNav({ api }: PlayerNavProps) {
   };
 
   useEffect(() => {
-    setTracks(api?.score?.tracks || []);
+    setScoreTracks(api?.score?.tracks || []);
     setActualTrack(api?.tracks[0]);
     setMasterVolume(api?.masterVolume);
     setTempo(api?.score?.tempo);
-  }, [tracks]);
+  }, [scoreTracks]);
 
   return (
     <div className='fixed bottom-0 z-20 w-full flex justify-center pb-3'>
@@ -205,12 +207,13 @@ export default function PlayerNav({ api }: PlayerNavProps) {
             </Tooltip>
           </TooltipProvider>
 
+          {/* TEST BUTTON */}
           <Button
             variant='outline'
             size='icon'
             className='text-black'
             // onClick={() => console.log(api?.score?.tracks[actualTrack].name)} // This prints the actual track inside score
-            onClick={() => console.log(api?.tracks)} // This prints the actual rendered track
+            onClick={() => console.log(scoreTracks)} // This prints the actual rendered track
           >
             <CircleHelp />
           </Button>
@@ -261,31 +264,39 @@ export default function PlayerNav({ api }: PlayerNavProps) {
         <div className='px-3'>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant='default'>Instrumentos</Button>
+              <Button variant='default'>{'Instrumentos'}</Button>
             </PopoverTrigger>
             <PopoverContent className='w-fit' align='end'>
               <div className='flex flex-col space-y-2'>
                 <h4 className='scroll-m-20 text-xl font-semibold tracking-tight border-b'>
                   Instrumentos
                 </h4>
-                {tracks?.map((track) => (
+                {scoreTracks?.map((track) => (
                   <div
                     key={track.index}
-                    onClick={() => {
-                      api!.renderTracks([track]);
-                      setActualTrack(track);
-                    }}
                     className={clsx(
                       {
                         'border-blue-500': actualTrack?.index === track.index,
                       },
-                      'flex gap-5 items-center justify-between  p-2 rounded-lg hover:border-slate-800 border-[1px] cursor-pointer'
+                      'flex gap-5 items-center justify-between  p-2 rounded-lg hover:border-blue-300 border-[1px] cursor-pointer'
                     )}
                   >
                     {track.staves[0].isPercussion ? (
-                      <GiDrumKit size={32} />
+                      <GiDrumKit
+                        size={32}
+                        onClick={() => {
+                          api!.renderTracks([track]);
+                          setActualTrack(track);
+                        }}
+                      />
                     ) : (
-                      <GiGuitarHead size={32} />
+                      <GiGuitarHead
+                        size={32}
+                        onClick={() => {
+                          api!.renderTracks([track]);
+                          setActualTrack(track);
+                        }}
+                      />
                     )}
                     <Label>{track.name}</Label>
                     <p className='text-sm text-muted-foreground'>
@@ -296,14 +307,14 @@ export default function PlayerNav({ api }: PlayerNavProps) {
                     <Toggle
                       onPressedChange={() =>
                         api?.changeTrackMute(
-                          [api.score!.tracks[track.index]],
-                          !api.score!.tracks[track.index].playbackInfo.isMute
+                          [track],
+                          !track.playbackInfo.isMute
                         )
                       }
                     >
                       <Headphones />
                     </Toggle>
-                    <Toggle value='mute'>
+                    <Toggle>
                       <VolumeX />
                     </Toggle>
                   </div>
