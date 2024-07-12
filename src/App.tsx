@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import PlayerNav from './components/PlayerNav';
 import { AlphaTabApi, Settings } from '@coderline/alphatab';
+import PlayerNav from './components/PlayerNav';
 
 function App() {
   const elementRef = useRef<HTMLDivElement>(null);
@@ -10,7 +10,7 @@ function App() {
     const alphaTabApi = new AlphaTabApi(elementRef.current!, {
       core: {
         // file: 'https://www.alphatab.net/files/canon.gp', // This file is loaded from the internet
-        file: '/gp-songs/temp/Animals as Leaders - Physical Education.gp5', // This is the file that will be loaded from the public folder
+        file: '/gp-songs/temp/Chimera.gp5', // This is the file that will be loaded from the public folder
         fontDirectory: '/font/',
       },
       player: {
