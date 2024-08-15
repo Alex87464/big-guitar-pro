@@ -10,7 +10,7 @@ function App() {
     const alphaTabApi = new AlphaTabApi(elementRef.current!, {
       core: {
         // file: 'https://www.alphatab.net/files/canon.gp', // This file is loaded from the internet
-        file: '/gp-songs/temp/Chimera.gp5', // This is the file that will be loaded from the public folder
+        file: '/gp-songs/caprice24.gp', // This is the file that will be loaded from the public folder
         fontDirectory: '/font/',
       },
       player: {
