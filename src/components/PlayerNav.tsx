@@ -42,7 +42,7 @@ export default function PlayerNav({ api }: PlayerNavProps) {
 
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const [actualTrackMuted, setActualTrackMuted] = useState(false);
+  // const [actualTrackMuted, setActualTrackMuted] = useState(false);
 
   const [isRepeat, setIsRepeat] = useState(false);
 
@@ -71,7 +71,7 @@ export default function PlayerNav({ api }: PlayerNavProps) {
     api!.countInVolume = !isCountDownEnabled ? 1 : 0;
   };
 
-  const handleMute = () => {};
+  // const handleMute = () => {};
 
   const onTempoChange = (value: number) => {
     api!.playbackSpeed = value / 100;
